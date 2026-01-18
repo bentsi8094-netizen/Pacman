@@ -1,8 +1,13 @@
 package model;
 
-public interface MoveCommand {
-    boolean isUp();
-    boolean isDown();
-    boolean isLeft();
-    boolean isRight();
+public class MoveCommand {
+    private String direction;
+
+    public MoveCommand(String direction) {
+        this.direction = direction;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
 }

@@ -10,62 +10,63 @@ public class CollisionChecker {
     }
 
     public void checkTile(Entity entity) {
-        int entityLeftX = entity.x + entity.solidArea.x;
-        int entityRightX = entity.x + entity.solidArea.x + entity.solidArea.width;
-        int entityTopY = entity.y + entity.solidArea.y;
-        int entityBottomY = entity.y + entity.solidArea.y + entity.solidArea.height;
+        // padding גדול יותר מאפשר כניסה קלה יותר לשבילים
+        int padding = 8; 
+        int entityLeftX = entity.x + padding;
+        int entityRightX = entity.x + Config.TILE_SIZE - padding - 1;
+        int entityTopY = entity.y + padding;
+        int entityBottomY = entity.y + Config.TILE_SIZE - padding - 1;
 
         int leftCol = entityLeftX / Config.TILE_SIZE;
         int rightCol = entityRightX / Config.TILE_SIZE;
         int topRow = entityTopY / Config.TILE_SIZE;
         int bottomRow = entityBottomY / Config.TILE_SIZE;
 
-        // לוגיקת מעבר בטוח: אם מחוץ לגבולות המפה, אין בדיקת התנגשות
-        if (leftCol < 0 || rightCol >= Config.MAX_SCREEN_COLS || 
-            topRow < 0 || bottomRow >= Config.MAX_SCREEN_ROWS) {
-            entity.collisionOn = false;
-            return;
-        }
+        int t1, t2;
 
-        int tile1, tile2;
         switch (entity.direction) {
             case "up":
-                topRow = (entityTopY - entity.speed) / Config.TILE_SIZE;
-                if (topRow >= 0) {
-                    tile1 = model.getTileManager().mapTileNum[leftCol][topRow];
-                    tile2 = model.getTileManager().mapTileNum[rightCol][topRow];
-                    if (isSolid(tile1) || isSolid(tile2)) entity.collisionOn = true;
-                }
+                t1 = model.getTileManager().getTileAt(leftCol, (entityTopY - entity.speed) / Config.TILE_SIZE);
+                t2 = model.getTileManager().getTileAt(rightCol, (entityTopY - entity.speed) / Config.TILE_SIZE);
+                if (isSolid(t1) || isSolid(t2)) entity.collisionOn = true;
                 break;
             case "down":
-                bottomRow = (entityBottomY + entity.speed) / Config.TILE_SIZE;
-                if (bottomRow < Config.MAX_SCREEN_ROWS) {
-                    tile1 = model.getTileManager().mapTileNum[leftCol][bottomRow];
-                    tile2 = model.getTileManager().mapTileNum[rightCol][bottomRow];
-                    if (isSolid(tile1) || isSolid(tile2)) entity.collisionOn = true;
-                }
+                t1 = model.getTileManager().getTileAt(leftCol, (entityBottomY + entity.speed) / Config.TILE_SIZE);
+                t2 = model.getTileManager().getTileAt(rightCol, (entityBottomY + entity.speed) / Config.TILE_SIZE);
+                if (isSolid(t1) || isSolid(t2)) entity.collisionOn = true;
                 break;
             case "left":
-                leftCol = (entityLeftX - entity.speed) / Config.TILE_SIZE;
-                if (leftCol >= 0) {
-                    tile1 = model.getTileManager().mapTileNum[leftCol][topRow];
-                    tile2 = model.getTileManager().mapTileNum[leftCol][bottomRow];
-                    if (isSolid(tile1) || isSolid(tile2)) entity.collisionOn = true;
-                }
+                t1 = model.getTileManager().getTileAt((entityLeftX - entity.speed) / Config.TILE_SIZE, topRow);
+                t2 = model.getTileManager().getTileAt((entityLeftX - entity.speed) / Config.TILE_SIZE, bottomRow);
+                if (isSolid(t1) || isSolid(t2)) entity.collisionOn = true;
                 break;
             case "right":
-                rightCol = (entityRightX + entity.speed) / Config.TILE_SIZE;
-                if (rightCol < Config.MAX_SCREEN_COLS) {
-                    tile1 = model.getTileManager().mapTileNum[rightCol][topRow];
-                    tile2 = model.getTileManager().mapTileNum[rightCol][bottomRow];
-                    if (isSolid(tile1) || isSolid(tile2)) entity.collisionOn = true;
-                }
+                t1 = model.getTileManager().getTileAt((entityRightX + entity.speed) / Config.TILE_SIZE, topRow);
+                t2 = model.getTileManager().getTileAt((entityRightX + entity.speed) / Config.TILE_SIZE, bottomRow);
+                if (isSolid(t1) || isSolid(t2)) entity.collisionOn = true;
                 break;
         }
     }
 
-    private boolean isSolid(int tileType) {
-        // 1=קיר, 2=ברזל, 4=שער
-        return tileType == 1 || tileType == 2 || tileType == 4;
+    private boolean isSolid(int tile) {
+        return tile == 1 || tile == 2 || tile == 4;
+    }
+
+    // בדיקת "האם הכיוון הזה אפשרי בכלל" - משמשת לפני פנייה
+    public boolean isWall(Entity entity, String dir) {
+        int nextX = entity.x;
+        int nextY = entity.y;
+        
+        // בבדיקת פנייה אנחנו בודקים את מרכז המשבצת הבאה
+        if (dir.equals("up")) nextY -= Config.TILE_SIZE;
+        else if (dir.equals("down")) nextY += Config.TILE_SIZE;
+        else if (dir.equals("left")) nextX -= Config.TILE_SIZE;
+        else if (dir.equals("right")) nextX += Config.TILE_SIZE;
+
+        int col = (nextX + Config.TILE_SIZE / 2) / Config.TILE_SIZE;
+        int row = (nextY + Config.TILE_SIZE / 2) / Config.TILE_SIZE;
+        
+        int tile = model.getTileManager().getTileAt(col, row);
+        return isSolid(tile);
     }
 }

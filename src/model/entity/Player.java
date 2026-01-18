@@ -1,19 +1,35 @@
 package model.entity;
 
 import model.CollisionChecker;
-import model.Config;
 import model.MoveCommand;
+import model.Config;
 
 public class Player extends Entity {
+    
     public Player() {
-        x = 324; y = 552; speed = 2; direction = "right";
+        x = Config.TILE_SIZE * 13; 
+        y = Config.TILE_SIZE * 23;
+        speed = 2;
+        direction = "right";
     }
 
     public void update(MoveCommand command, CollisionChecker checker) {
-        if (command.isUp()) direction = "up";
-        else if (command.isDown()) direction = "down";
-        else if (command.isLeft()) direction = "left";
-        else if (command.isRight()) direction = "right";
+        if (command != null) {
+            String requestedDir = command.getDirection();
+            
+            // ניסיון פנייה
+            if (!requestedDir.equals(direction)) {
+                if (!checker.isWall(this, requestedDir)) {
+                    // יישור מיידי למרכז המשבצת כדי לאפשר תנועה חלקה בשביל החדש
+                    if (requestedDir.equals("up") || requestedDir.equals("down")) {
+                        x = ((x + Config.TILE_SIZE / 2) / Config.TILE_SIZE) * Config.TILE_SIZE;
+                    } else {
+                        y = ((y + Config.TILE_SIZE / 2) / Config.TILE_SIZE) * Config.TILE_SIZE;
+                    }
+                    this.direction = requestedDir;
+                }
+            }
+        }
 
         collisionOn = false;
         checker.checkTile(this);
@@ -26,12 +42,17 @@ public class Player extends Entity {
                 case "right": x += speed; break;
             }
         }
+        
+        handleTunnel();
+        updateAnimation();
+    }
 
-        // לוגיקת המנהרה (Teleport)
-        int screenLimit = Config.MAX_SCREEN_COLS * Config.TILE_SIZE;
-        if (x < -Config.TILE_SIZE) x = screenLimit;
-        else if (x > screenLimit) x = -Config.TILE_SIZE;
+    private void handleTunnel() {
+        if (x < -Config.TILE_SIZE) x = Config.MAP_WIDTH;
+        if (x > Config.MAP_WIDTH) x = -Config.TILE_SIZE;
+    }
 
+    private void updateAnimation() {
         spriteCounter++;
         if (spriteCounter > 10) {
             spriteNum = (spriteNum == 1) ? 2 : 1;

@@ -20,7 +20,7 @@ public class GameModel {
     private double playTime = 0;
     private boolean isPowerMode = false;
     private int powerTimer = 0;
-    private int startDelay = 60; // מחכה 60 פריימים (שנייה אחת) לפני שמתחיל לבדוק מוות
+    private int startDelay = 60; 
 
     public GameModel() {
         this.tileManager = new TileManager();
@@ -29,25 +29,30 @@ public class GameModel {
     }
 
     public void initLevel() {
+        // חשוב ליצור קודם את השחקן כדי שהרוחות יוכלו למצוא אותו ב-update הראשון
         this.player = new Player();
         this.ghosts = new ArrayList<>();
-        this.ghosts.add(new Blinky());
-        this.startDelay = 60; // איפוס השהייה בכל פסילה
+        
+        // כאן התיקון: מעבירים את המודל (this) לבנאי של בלינקי
+        this.ghosts.add(new Blinky(this));
+        
+        this.startDelay = 60; 
     }
 
     public void update(MoveCommand command) {
         if (currentState != GameState.PLAYING) return;
 
+        if (startDelay > 0) {
+            startDelay--;
+            return;
+        }
+
         player.update(command, collisionChecker);
         
         for (Ghost ghost : ghosts) {
             ghost.update(collisionChecker);
-            if (startDelay <= 0) { // רק אחרי שהמשחק התייצב
-                checkCollisionWithGhost(ghost);
-            }
+            checkCollisionWithGhost(ghost);
         }
-        
-        if (startDelay > 0) startDelay--;
         
         checkItemConsumption();
         
@@ -60,6 +65,7 @@ public class GameModel {
     }
 
     private void checkCollisionWithGhost(Ghost ghost) {
+        // חישוב מרחק ממרכז למרכז
         int dx = Math.abs((player.x + 12) - (ghost.x + 12));
         int dy = Math.abs((player.y + 12) - (ghost.y + 12));
 
@@ -68,11 +74,15 @@ public class GameModel {
                 ghost.resetPosition();
                 score += 200;
             } else {
-                lives--;
-                if (lives <= 0) currentState = GameState.GAME_OVER;
-                else initLevel();
+                handlePlayerDeath();
             }
         }
+    }
+
+    private void handlePlayerDeath() {
+        lives--;
+        if (lives <= 0) currentState = GameState.GAME_OVER;
+        else initLevel();
     }
 
     private void checkItemConsumption() {

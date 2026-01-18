@@ -7,13 +7,16 @@ import model.GameModel;
 import model.Config;
 import model.entity.Player;
 import model.entity.Ghost;
+import controller.KeyHandler;
 
 public class GamePanel extends JPanel {
     private GameModel gameModel;
     private UI ui;
+    private KeyHandler keyH;
 
-    public GamePanel(GameModel gameModel) {
+    public GamePanel(GameModel gameModel, KeyHandler keyH) {
         this.gameModel = gameModel;
+        this.keyH = keyH;
         this.ui = new UI(gameModel);
         
         ImageLoader.loadAllResources();
@@ -23,6 +26,7 @@ public class GamePanel extends JPanel {
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
         this.setFocusable(true);
+        this.addKeyListener(keyH);
     }
 
     @Override
@@ -30,12 +34,15 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         
+        // שכבת המפה
         drawMap(g2);
+        // שכבת הרוחות
         drawGhosts(g2);
+        // שכבת השחקן
         drawPlayer(g2);
+        // שכבת ה-UI (ניקוד, זמן)
         ui.draw(g2);
         
-        // פקודה קריטית למניעת לאגים וקפיצות ב-Java Swing
         Toolkit.getDefaultToolkit().sync();
         g2.dispose();
     }
@@ -48,26 +55,27 @@ public class GamePanel extends JPanel {
                 int x = col * Config.TILE_SIZE;
                 int y = row * Config.TILE_SIZE;
 
+                // ציור דשא כרקע לכל מה שאינו קיר
                 if (tileType != 1 && tileType != 2) {
                     g2.drawImage(ImageLoader.get("grass"), x, y, Config.TILE_SIZE, Config.TILE_SIZE, null);
                 }
 
                 switch (tileType) {
-                    case 0:
+                    case 0: // נקודה קטנה
                         g2.setColor(Color.WHITE);
                         g2.fillOval(x + 10, y + 10, 4, 4);
                         break;
-                    case 3:
+                    case 3: // כדור כוח
                         g2.setColor(Color.WHITE);
                         g2.fillOval(x + 6, y + 6, 12, 12);
                         break;
-                    case 1:
+                    case 1: // קיר רגיל
                         g2.drawImage(ImageLoader.get("wall"), x, y, Config.TILE_SIZE, Config.TILE_SIZE, null);
                         break;
-                    case 2:
+                    case 2: // קיר ברזל
                         g2.drawImage(ImageLoader.get("iron"), x, y, Config.TILE_SIZE, Config.TILE_SIZE, null);
                         break;
-                    case 4: // הדלת חזרה!
+                    case 4: // דלת בית הרוחות
                         g2.setColor(new Color(255, 182, 255));
                         g2.fillRect(x, y + 10, Config.TILE_SIZE, 4);
                         break;

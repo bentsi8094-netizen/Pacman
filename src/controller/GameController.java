@@ -1,24 +1,50 @@
 package controller;
 
 import model.GameModel;
+import model.MoveCommand;
 import view.GamePanel;
 
-public class GameController {
-    private GameThread gameThread;
+public class GameController implements Runnable {
+    private GameModel model;
+    private GamePanel view;
     private KeyHandler keyHandler;
+    private Thread gameThread;
+    private final int FPS = 60;
 
-    public GameController(GameModel model, GamePanel panel) {
-        this.keyHandler = new KeyHandler();
-        panel.addKeyListener(keyHandler);
-        panel.setFocusable(true);
-
-        // ה-KeyHandler הוא ה-Command שמחזיק את מצב המקלדת
-        this.gameThread = new GameThread(model, panel, keyHandler);
-        startGame();
+    public GameController(GameModel model, GamePanel view, KeyHandler keyHandler) {
+        this.model = model;
+        this.view = view;
+        this.keyHandler = keyHandler;
     }
 
-    private void startGame() {
-        Thread thread = new Thread(gameThread);
-        thread.start();
+    public void startGameThread() {
+        gameThread = new Thread(this);
+        gameThread.start();
+    }
+
+    @Override
+    public void run() {
+        double drawInterval = 1000000000 / FPS;
+        double delta = 0;
+        long lastTime = System.nanoTime();
+        long currentTime;
+
+        while (gameThread != null) {
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            lastTime = currentTime;
+
+            if (delta >= 1) {
+                update(); // 1. עדכון לוגיקה (Model)
+                view.repaint(); // 2. עדכון גרפיקה (View)
+                delta--;
+            }
+        }
+    }
+
+    private void update() {
+        // קבלת הפקודה מה-Controller והעברתה למודל
+        MoveCommand command = keyHandler.getCommand();
+        model.update(command);
     }
 }
