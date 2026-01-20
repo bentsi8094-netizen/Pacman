@@ -18,8 +18,10 @@ public class GameController implements Runnable {
     }
 
     public void startGameThread() {
-        gameThread = new Thread(this);
-        gameThread.start();
+        if (gameThread == null) {
+            gameThread = new Thread(this);
+            gameThread.start();
+        }
     }
 
     @Override
@@ -35,15 +37,14 @@ public class GameController implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                update(); // 1. עדכון לוגיקה (Model)
-                view.repaint(); // 2. עדכון גרפיקה (View)
+                update();
+                view.repaint();
                 delta--;
             }
         }
     }
 
     private void update() {
-        // קבלת הפקודה מה-Controller והעברתה למודל
         MoveCommand command = keyHandler.getCommand();
         model.update(command);
     }

@@ -12,12 +12,10 @@ public class ImageLoader {
 
     public static void loadAllResources() {
         try {
-            // רקע
             put("wall", "src/image/woll.png");
             put("grass", "src/image/grass.png");
             put("iron", "src/image/airon.png");
 
-            // פקמן
             put("pacman_up_open", "src/image/openUp.png");
             put("pacman_up_close", "src/image/closeUp.png");
             put("pacman_down_open", "src/image/openDown.png");
@@ -27,11 +25,25 @@ public class ImageLoader {
             put("pacman_right_open", "src/image/openRight.png");
             put("pacman_right_close", "src/image/closeRight.png");
 
-            // רוחות - שים לב לשמות הקבצים שלך!
             put("blinky_up", "src/image/blinkyUp.png");
             put("blinky_down", "src/image/blinkyDown.png");
             put("blinky_left", "src/image/blinkyLeft.png");
             put("blinky_right", "src/image/blinkyRight.png");
+
+            put("pinky_up", "src/image/pinkyUp.png");
+            put("pinky_down", "src/image/pinkyDown.png");
+            put("pinky_left", "src/image/pinkyLeft.png");
+            put("pinky_right", "src/image/pinkyRight.png");
+
+            put("inky_up", "src/image/inkyUp.png");
+            put("inky_down", "src/image/inkyDown.png");
+            put("inky_left", "src/image/inkyLeft.png");
+            put("inky_right", "src/image/inkyRight.png");
+
+            put("clyde_up", "src/image/clydeUp.png");
+            put("clyde_down", "src/image/clydeDown.png");
+            put("clyde_left", "src/image/clydeLeft.png");
+            put("clyde_right", "src/image/clydeRight.png");
 
         } catch (IOException e) {
             System.err.println("Error: Image files missing!");

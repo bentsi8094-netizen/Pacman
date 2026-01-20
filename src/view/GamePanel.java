@@ -19,9 +19,6 @@ public class GamePanel extends JPanel {
         this.keyH = keyH;
         this.ui = new UI(gameModel);
         
-        ImageLoader.loadAllResources();
-        TileLoader.loadMap(gameModel, "src/image/map/map01.txt");
-        
         this.setPreferredSize(new Dimension(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
@@ -34,13 +31,9 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
         
-        // שכבת המפה
         drawMap(g2);
-        // שכבת הרוחות
         drawGhosts(g2);
-        // שכבת השחקן
         drawPlayer(g2);
-        // שכבת ה-UI (ניקוד, זמן)
         ui.draw(g2);
         
         Toolkit.getDefaultToolkit().sync();
@@ -55,27 +48,26 @@ public class GamePanel extends JPanel {
                 int x = col * Config.TILE_SIZE;
                 int y = row * Config.TILE_SIZE;
 
-                // ציור דשא כרקע לכל מה שאינו קיר
                 if (tileType != 1 && tileType != 2) {
                     g2.drawImage(ImageLoader.get("grass"), x, y, Config.TILE_SIZE, Config.TILE_SIZE, null);
                 }
 
                 switch (tileType) {
-                    case 0: // נקודה קטנה
+                    case 0:
                         g2.setColor(Color.WHITE);
                         g2.fillOval(x + 10, y + 10, 4, 4);
                         break;
-                    case 3: // כדור כוח
+                    case 3:
                         g2.setColor(Color.WHITE);
                         g2.fillOval(x + 6, y + 6, 12, 12);
                         break;
-                    case 1: // קיר רגיל
+                    case 1:
                         g2.drawImage(ImageLoader.get("wall"), x, y, Config.TILE_SIZE, Config.TILE_SIZE, null);
                         break;
-                    case 2: // קיר ברזל
+                    case 2:
                         g2.drawImage(ImageLoader.get("iron"), x, y, Config.TILE_SIZE, Config.TILE_SIZE, null);
                         break;
-                    case 4: // דלת בית הרוחות
+                    case 4:
                         g2.setColor(new Color(255, 182, 255));
                         g2.fillRect(x, y + 10, Config.TILE_SIZE, 4);
                         break;

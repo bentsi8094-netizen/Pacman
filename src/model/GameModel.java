@@ -3,6 +3,9 @@ package model;
 import model.entity.Player;
 import model.entity.Ghost;
 import model.entity.Blinky;
+import model.entity.Pinky;
+import model.entity.Inky;
+import model.entity.Clyde;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,12 +32,13 @@ public class GameModel {
     }
 
     public void initLevel() {
-        // חשוב ליצור קודם את השחקן כדי שהרוחות יוכלו למצוא אותו ב-update הראשון
         this.player = new Player();
         this.ghosts = new ArrayList<>();
         
-        // כאן התיקון: מעבירים את המודל (this) לבנאי של בלינקי
         this.ghosts.add(new Blinky(this));
+        this.ghosts.add(new Pinky(this));
+        this.ghosts.add(new Inky(this));
+        this.ghosts.add(new Clyde(this));
         
         this.startDelay = 60; 
     }
@@ -65,7 +69,6 @@ public class GameModel {
     }
 
     private void checkCollisionWithGhost(Ghost ghost) {
-        // חישוב מרחק ממרכז למרכז
         int dx = Math.abs((player.x + 12) - (ghost.x + 12));
         int dy = Math.abs((player.y + 12) - (ghost.y + 12));
 
