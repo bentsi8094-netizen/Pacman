@@ -10,7 +10,6 @@ public class CollisionChecker {
     }
 
     public void checkTile(Entity entity) {
-        // padding גדול יותר מאפשר כניסה קלה יותר לשבילים
         int padding = 8; 
         int entityLeftX = entity.x + padding;
         int entityRightX = entity.x + Config.TILE_SIZE - padding - 1;
@@ -52,12 +51,10 @@ public class CollisionChecker {
         return tile == 1 || tile == 2 || tile == 4;
     }
 
-    // בדיקת "האם הכיוון הזה אפשרי בכלל" - משמשת לפני פנייה
     public boolean isWall(Entity entity, String dir) {
         int nextX = entity.x;
         int nextY = entity.y;
         
-        // בבדיקת פנייה אנחנו בודקים את מרכז המשבצת הבאה
         if (dir.equals("up")) nextY -= Config.TILE_SIZE;
         else if (dir.equals("down")) nextY += Config.TILE_SIZE;
         else if (dir.equals("left")) nextX -= Config.TILE_SIZE;

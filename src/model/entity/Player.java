@@ -17,10 +17,9 @@ public class Player extends Entity {
         if (command != null) {
             String requestedDir = command.getDirection();
             
-            // ניסיון פנייה
             if (!requestedDir.equals(direction)) {
                 if (!checker.isWall(this, requestedDir)) {
-                    // יישור מיידי למרכז המשבצת כדי לאפשר תנועה חלקה בשביל החדש
+                    
                     if (requestedDir.equals("up") || requestedDir.equals("down")) {
                         x = ((x + Config.TILE_SIZE / 2) / Config.TILE_SIZE) * Config.TILE_SIZE;
                     } else {

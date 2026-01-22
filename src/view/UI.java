@@ -19,7 +19,6 @@ public class UI {
     public void draw(Graphics2D g2) {
         int xStart = Config.MAP_WIDTH;
 
-        // Sidebar Background
         g2.setColor(new Color(30, 20, 170));
         g2.fillRect(xStart, 0, Config.INFO_WIDTH, Config.SCREEN_HEIGHT);
 
@@ -29,7 +28,6 @@ public class UI {
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        // Score
         g2.setFont(arial_28);
         g2.setColor(Color.BLACK);
         g2.drawString("SCORE", xStart + 40, 80);
@@ -37,7 +35,6 @@ public class UI {
         g2.setColor(Color.YELLOW);
         g2.drawString(String.format("%05d", gameModel.getScore()), xStart + 40, 130);
 
-        // Time
         g2.setFont(arial_28);
         g2.setColor(Color.BLACK);
         g2.drawString("TIME", xStart + 40, 220);
@@ -45,7 +42,6 @@ public class UI {
         g2.setColor(new Color(0, 255, 100));
         g2.drawString(dFormat.format(gameModel.getPlayTime()) + "s", xStart + 40, 270);
 
-        // Lives
         g2.setFont(arial_28);
         g2.setColor(Color.BLACK);
         g2.drawString("LIVES", xStart + 40, 360);
@@ -54,14 +50,12 @@ public class UI {
             g2.fillArc(xStart + 40 + (i * 40), 380, 30, 30, 45, 270);
         }
 
-        // Power Mode
         if (gameModel.isPowerMode()) {
             g2.setFont(arial_28);
             g2.setColor(Color.RED);
             g2.drawString("POWER!", xStart + 40, 480);
         }
 
-        // Game State Messages
         if (gameModel.getState() == GameModel.GameState.GAME_OVER) {
             drawCenteredText(g2, "GAME OVER", Color.RED, 60);
         } else if (gameModel.getState() == GameModel.GameState.PAUSED) {
