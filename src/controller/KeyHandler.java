@@ -39,7 +39,7 @@ public class KeyHandler implements KeyListener {
             lastCommand = new MoveCommand("right");
         }
         
-        if (code == KeyEvent.VK_P) {
+        if (code == KeyEvent.VK_SPACE) {
             if (gameModel.getState() == GameModel.GameState.PLAYING) {
                 gameModel.setState(GameModel.GameState.PAUSED);
             } else if (gameModel.getState() == GameModel.GameState.PAUSED) {
